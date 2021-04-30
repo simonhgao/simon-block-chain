@@ -4,14 +4,17 @@ import (
 	"fmt"
 )
 
-type Block struct {
-	Timestamp     int64
-	Data          []byte
-	PrevBlockHash []byte
-	Hash          []byte
-}
-
 func main() {
-	a := &Block{}
-  fmt.Printf("%p\n", a)
+	println("Let's start a demo block chain example")
+	bc := NewBlockchain()
+
+	bc.AddBlock("Send 1 BTC to simon")
+	bc.AddBlock("Send 2 more BTC to kevin")
+
+	for _, block := range bc.blocks {
+		fmt.Printf("Prev. Hash: %x\n", block.GetHead().PrevBlockHash)
+		fmt.Printf("Data: %s\n", block.Transactions)
+		fmt.Printf("Hash: %x\n", block.GetHead().Hash)
+		fmt.Println()
+	}
 }
