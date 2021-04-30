@@ -1,10 +1,10 @@
 package main
 
 import (
-	"bytes"
-	"crypto/sha256"
 	"time"
 )
+
+const targetBits = 16
 
 // Block
 type Block struct {
@@ -43,27 +43,37 @@ func NewBlock(data string, prevBlockHash []byte) *Block {
 	block := new(Block)
 	block.Head = new(BlockHead)
 	block.Head.Version = 0x10000000
-	block.Head.Bits = 4
+	block.Head.Bits = targetBits
 	block.Head.PrevBlockHash = prevBlockHash
 	block.Head.Timestamp = time.Now()
-	block.Head.Nonce = 0
 	block.Transactions = []byte(data)
-	block.SetHash()
+	pow := NewProofOfWork(block)
+	nonce, hash := pow.Run()
+	block.Head.Nonce = uint32(nonce)
+	block.Head.Hash = hash[:]
 	return block
 }
 
-// 为当前的Block增加Hash
-func (b *Block) SetHash() {
-	timestamp := []byte(b.Head.Timestamp.String())
-	data := bytes.Join([][]byte{b.Head.PrevBlockHash, b.Transactions, timestamp}, []byte{})
-	hash := sha256.Sum256(data)
-	b.Head.Hash = hash[:]
-}
+// // 为当前的Block增加Hash
+// func (b *Block) SetHash() {
+// 	timestamp := []byte(b.Head.Timestamp.String())
+// 	data := bytes.Join([][]byte{b.Head.PrevBlockHash, b.Transactions, timestamp}, []byte{})
+// 	hash := sha256.Sum256(data)
+// 	b.Head.Hash = hash[:]
+// }
 
 // 获取头部
 func (b *Block) GetHead() *BlockHead {
 	if b != nil {
 		return b.Head
+	}
+	return nil
+}
+
+// 获取头部
+func (b *Block) GetTransactions() []byte {
+	if b != nil {
+		return b.Transactions
 	}
 	return nil
 }

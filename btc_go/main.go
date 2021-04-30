@@ -1,13 +1,11 @@
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
 
 func main() {
 	println("Let's start a demo block chain example")
-	bc := NewBlockchain()
 
+	bc := NewBlockChain()
 	bc.AddBlock("Send 1 BTC to simon")
 	bc.AddBlock("Send 2 more BTC to kevin")
 
