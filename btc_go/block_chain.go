@@ -32,7 +32,7 @@ func NewBlockChain() (*Blockchain, error) {
 			return nil, err
 		}
 	}
-	fmt.Printf("tip is : %x\n", tip)
+	// fmt.Printf("tip is : %x\n", tip)
 	return &Blockchain{tip, db}, nil
 }
 

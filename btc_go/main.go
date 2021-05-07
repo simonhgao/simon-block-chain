@@ -11,7 +11,7 @@ func main() {
 		println("create block chain err")
 		log.Panic(err.Error())
 	}
-	println("create block chain success")
+	// println("create block chain success")
 	// 延迟关闭数据库
 	defer func() {
 		err := bc.CloseDb()
