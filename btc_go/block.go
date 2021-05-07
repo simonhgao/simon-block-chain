@@ -1,6 +1,10 @@
 package main
 
 import (
+	"bytes"
+	"encoding/gob"
+	"fmt"
+	"log"
 	"time"
 )
 
@@ -40,6 +44,7 @@ func NewGenesisBlock() *Block {
 
 // 创建新块
 func NewBlock(data string, prevBlockHash []byte) *Block {
+	// prepare block data
 	block := new(Block)
 	block.Head = new(BlockHead)
 	block.Head.Version = 0x10000000
@@ -47,6 +52,7 @@ func NewBlock(data string, prevBlockHash []byte) *Block {
 	block.Head.PrevBlockHash = prevBlockHash
 	block.Head.Timestamp = time.Now()
 	block.Transactions = []byte(data)
+
 	pow := NewProofOfWork(block)
 	nonce, hash := pow.Run()
 	block.Head.Nonce = uint32(nonce)
@@ -76,4 +82,27 @@ func (b *Block) GetTransactions() []byte {
 		return b.Transactions
 	}
 	return nil
+}
+
+func (b *Block) Serialize() []byte {
+	var result bytes.Buffer
+	encoder := gob.NewEncoder(&result)
+	err := encoder.Encode(b)
+	if err != nil {
+		log.Fatal(err.Error())
+		return nil
+	}
+
+	return result.Bytes()
+}
+
+func DeserializeBlock(d []byte) (b *Block, err error) {
+	b = new(Block)
+	decoder := gob.NewDecoder(bytes.NewReader(d))
+	err = decoder.Decode(b)
+	if err != nil {
+		fmt.Printf("decode %x err : %s\n", d, err.Error())
+		return nil, err
+	}
+	return b, err
 }
